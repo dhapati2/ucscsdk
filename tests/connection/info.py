@@ -150,7 +150,9 @@ def get_policy_params(policy_name):
 
         if (policy_name is not 'compute_connection' and policy_name is not 'bios' and policy_name is not 'power_sync'
             and policy_name is not 'scrub' and policy_name is not 'vmedia'and policy_name is not 'ipmi' and
-            policy_name is not 'power_control' and policy_name is not 'hfp' and policy_name is not 'graphics_card'):
+            policy_name is not 'power_control' and policy_name is not 'hfp' and policy_name is not 'graphics_card' and policy_name is not 'hip'):
+
+            policy[policy_name + '_mode'] = config.get(section, policy_name + "_mode")
             policy[policy_name + '_mode'] = config.get(section, policy_name + "_mode")
 
         if policy_name is 'boot':
@@ -267,3 +269,134 @@ def get_schedule_params(schedule_name):
 
     return schedule
 
+def get_storage_params(storage_name):
+    config = ConfigParser.RawConfigParser()
+    config.read(os.path.join(os.path.dirname(__file__), '..', 'connection',
+                             'connection.cfg'))
+    section = 'storage'
+    storage = {}
+    try:
+        storage['storage_name'] = config.get(section,"storage_name")
+        storage['storage_parent_dn'] = config.get(section, "storage_parent_dn")
+        storage['storage_lun_name'] = config.get(section, "storage_lun_name")
+        storage['size'] = config.get(section, "size")
+        storage['fractional_size'] = config.get(section, "fractional_size")
+        storage['auto_deploy'] = config.get(section, "auto_deploy")
+        storage['expand_to_avail'] = config.get(section, "expand_to_avail")
+        storage['raid_mode'] = config.get(section, "raid_mode")
+        storage['protect_config'] = config.get(section, "protect_config")
+
+        for value in storage.values():
+            if not value or value.isspace():
+                raise
+    except:
+        storage = None
+
+    return storage
+
+
+
+def get_ethernet_adaptor_params():
+    section = "ethernet_adaptor_policy"
+    config = ConfigParser.RawConfigParser()
+    config.read(os.path.join(os.path.dirname(__file__), '..', 'connection', 'connection.cfg'))
+    domain = {}
+    try:
+        domain["parent_mo_or_dn"] = config.get(section, "ether_parent_dn")
+        domain["name"] = config.get(section, "ether_policy_name")
+        domain["descr"] = config.get(section, "ether_policy_descr")
+        domain["pooled_resources"] = config.get(section, "pooled_resources")
+        domain["large_receive"] = config.get(section, "large_receive")
+        domain["tcp_rx_checksum"] = config.get(section, "tcp_rx_checksum")
+        domain["tcp_segment"] = config.get(section, "tcp_segment")
+        domain["tcp_tx_checksum"] = config.get(section, "tcp_tx_checksum")
+        domain["work_count"] = config.get(section, "work_count")
+        domain["work_ring_size"] = config.get(section, "work_ring_size")
+        domain["comp_count"] = config.get(section, "comp_count")
+        domain["offload"] = config.get(section, "offload")
+        domain["recv_count"] = config.get(section, "recv_count")
+        domain["recv_ring_size"] = config.get(section, "recv_ring_size")
+        domain["accelarated_rfs"] = config.get(section, "accelarated_rfs")
+        domain["admin_state"] = config.get(section, "admin_state")
+        domain["cos"] = config.get(section, "cos")
+        domain["memory_regions"] = config.get(section, "memory_regions")
+        domain["prio"] = config.get(section, "prio")
+        domain["queue_pairs"] = config.get(section, "queue_pairs")
+        domain["resource_groups"] = config.get(section, "resource_groups")
+        domain["v1"] = config.get(section, "v1")
+        domain["v2"] = config.get(section, "v2")
+        domain["coalescing_time"] = config.get(section, "coalescing_time")
+        domain["coalescing_type"] = config.get(section, "coalescing_type")
+        domain["interrupt_count"] = config.get(section, "interrupt_count")
+        domain["mode"] = config.get(section, "mode")
+        domain["receive_side_scaling"] = config.get(section, "receive_side_scaling")
+
+        for value in domain.values():
+            if not value or value.isspace():
+                raise
+    except:
+        domain = None
+    return domain
+
+def get_fc_adaptor_params():
+    section = "fc_adaptor_policy"
+    config = ConfigParser.RawConfigParser()
+    config.read(os.path.join(os.path.dirname(__file__), '..', 'connection', 'connection.cfg'))
+    domain = {}
+    try:
+        domain["parent_mo_or_dn"] = config.get(section, "fc_parent_dn")
+        domain["name"] = config.get(section, "fc_policy_name")
+        domain["descr"] = config.get(section, "fc_policy_descr")
+        domain["work_cbd_count"] = config.get(section, "work_cbd_count")
+        domain["work_cbd_ring_size"] = config.get(section, "work_cbd_ring_size")
+        domain["plogi_retries"] = config.get(section, "plogi_retries")
+        domain["plogi_timeout"] = config.get(section, "plogi_timeout")
+        domain["flogi_retries"] = config.get(section, "flogi_retries")
+        domain["flogi_timeout"] = config.get(section, "flogi_timeout")
+        domain["fcp_error_recovery"] = config.get(section, "fcp_error_recovery")
+        domain["link_down_timeout"] = config.get(section, "link_down_timeout")
+        domain["port_down_io_retry_count"] = config.get(section, "port_down_io_retry_count")
+        domain["port_down_timeout"] = config.get(section, "port_down_timeout")
+        domain["work_ring_size"] = config.get(section, "work_ring_size")
+        domain["recv_ring_size"] = config.get(section, "recv_ring_size")
+        domain["io_throttle_count"] = config.get(section, "io_throttle_count")
+        domain["luns_per_target"] = config.get(section, "luns_per_target")
+        domain["io_retry_timeout"] = config.get(section, "io_retry_timeout")
+        domain["mode"] = config.get(section, "mode")
+        domain["lun_queue_depth"] = config.get(section, "lun_queue_depth")
+
+        for value in domain.values():
+            if not value or value.isspace():
+                raise
+    except:
+        domain = None
+    return domain
+
+
+def get_disk_zoning_params():
+    section = "disk_zoning_policy"
+    config = ConfigParser.RawConfigParser()
+    config.read(os.path.join(os.path.dirname(__file__), '..', 'connection', 'connection.cfg'))
+    domain = {}
+    try:
+        domain["parent_mo_dn"] = config.get(section, "parent_mo_dn")
+        domain["name"] = config.get(section, "policy_name")
+        domain["descr"] = config.get(section, "descr")
+        domain["preserve_config"] = config.get(section, "preserve_config")
+        domain["id_1"] = config.get(section, "id_1")
+        domain["id_2"] = config.get(section, "id_2")
+        domain["id_3"] = config.get(section, "id_3")
+        domain["id_4"] = config.get(section, "id_4")
+        domain["id_5"] = config.get(section, "id_5")
+        domain["id_6"] = config.get(section, "id_6")
+        domain["id_7"] = config.get(section, "id_7")
+        domain["id_8"] = config.get(section, "id_8")
+        domain["id_9"] = config.get(section, "id_9")
+        domain["id_10"] = config.get(section, "id_10")
+
+        for value in domain.values():
+            if not value or value.isspace():
+                raise
+    except:
+        domain = None
+    return domain
