@@ -111,3 +111,14 @@ def test_create_fc_adapter_policy():
         pytest.fail(f"Error creating FC Adapter policy: {str(e)}")
 
 
+@with_setup(setup, teardown)
+def test_delete_fc_adapter_policy():
+    print('delete_fc_adapter_policy() method execution started...............')
+
+    parent_mo_dn = adapter_params["parent_mo_or_dn"]
+    policy_name = adapter_params["name"]
+
+    obj = handle.query_dn(parent_mo_dn + "/fc-profile-" + policy_name)
+    handle.remove_mo(obj)
+    handle.commit()
+

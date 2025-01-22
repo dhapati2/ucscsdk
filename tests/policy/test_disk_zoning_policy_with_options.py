@@ -4,6 +4,7 @@ import pytest
 from nose import with_setup
 
 from tests.connection.info import custom_setup, custom_teardown, get_disk_zoning_params
+from ucscsdk.mometa.lstorage.LstorageControllerRef import LstorageControllerRef
 from ucscsdk.mometa.lstorage.LstorageDiskSlot import LstorageDiskSlot
 from ucscsdk.mometa.lstorage.LstorageDiskZoningPolicy import LstorageDiskZoningPolicy
 
@@ -30,41 +31,44 @@ def test_create_disk_zoning_policy():
         policy_name = adapter_params["name"]
         descr = adapter_params["descr"]
         preserve_config = adapter_params["preserve_config"]
-        id_1 = adapter_params["id_1"]
-        id_2 = adapter_params["id_2"]
-        id_3 = adapter_params["id_3"]
-        id_4 = adapter_params["id_4"]
-        id_5 = adapter_params["id_5"]
-        id_6 = adapter_params["id_6"]
-        id_7 = adapter_params["id_7"]
-        id_8 = adapter_params["id_8"]
-        id_9 = adapter_params["id_9"]
-        id_10 = adapter_params["id_10"]
+        server_id = adapter_params["server_id"]
+        controller_id = adapter_params["controller_id"]
+        controller_type = adapter_params["controller_type"]
+        unassigned_from = int(adapter_params["unassigned_from"])
+        unassigned_to = int(adapter_params["unassigned_to"])
+        dedicated_from = int(adapter_params["dedicated_from"])
+        dedicated_to = int(adapter_params["dedicated_from"])
+        chassis_from = int(adapter_params["chassis_from"])
+        chassis_to =int(adapter_params["chassis_from"])
+        shared_from = int(adapter_params["shared_from"])
+        shared_to = int(adapter_params["shared_to"])
 
-        mo = LstorageDiskZoningPolicy(parent_mo_or_dn=parent_mo_dn, name=policy_name, descr=descr)
+        mo = LstorageDiskZoningPolicy(parent_mo_or_dn=parent_mo_dn, name=policy_name, descr=descr, preserve_config=preserve_config)
 
-        #mo = LstorageDiskZoningPolicy(parent_mo_or_dn=parent_mo_dn, name=policy_name, descr=descr, preserve_config=preserve_config)
+        for i in range(unassigned_from, unassigned_to):
+            unassigned_mo = LstorageDiskSlot(parent_mo_or_dn=mo, id=str(i))
+            unassigned_mo.ownership = 'unassigned'
 
-        l_storage_disk_slot_1 = LstorageDiskSlot(parent_mo_or_dn=mo
-                                               ,id=id_1)
-        l_storage_disk_slot_2 = LstorageDiskSlot(parent_mo_or_dn=mo
-                                               ,id=id_2)
-        l_storage_disk_slot_3 = LstorageDiskSlot(parent_mo_or_dn=mo
-                                               ,id=id_3)
-        l_storage_disk_slot_4 = LstorageDiskSlot(parent_mo_or_dn=mo
-                                               ,id=id_4)
-        l_storage_disk_slot_5 = LstorageDiskSlot(parent_mo_or_dn=mo
-                                               ,id=id_5)
-        l_storage_disk_slot_6 = LstorageDiskSlot(parent_mo_or_dn=mo
-                                               ,id=id_6)
-        l_storage_disk_slot_7 = LstorageDiskSlot(parent_mo_or_dn=mo
-                                               ,id=id_7)
-        l_storage_disk_slot_8 = LstorageDiskSlot(parent_mo_or_dn=mo
-                                               ,id=id_8)
-        l_storage_disk_slot_9 = LstorageDiskSlot(parent_mo_or_dn=mo
-                                               ,id=id_9)
-        l_storage_disk_slot_10 = LstorageDiskSlot(parent_mo_or_dn=mo
-                                               ,id=id_10)
+        for j in range(dedicated_from, dedicated_to):
+            dedicated_mo = LstorageDiskSlot(parent_mo_or_dn=mo, id=str(j))
+            dedicated_mo.drive_path = 'PATH-BOTH'
+            dedicated_mo.ownership = 'dedicated'
+            controller_ref = LstorageControllerRef(parent_mo_or_dn=dedicated_mo, server_id=server_id,
+                                                   controller_type=controller_type, controller_id=controller_id)
+
+        for k in range(shared_from, shared_to):
+            dedicated_mo = LstorageDiskSlot(parent_mo_or_dn=mo, id=str(k))
+            dedicated_mo.drive_path = 'PATH-BOTH'
+            dedicated_mo.ownership = 'shared'
+            controller_ref = LstorageControllerRef(parent_mo_or_dn=dedicated_mo, server_id=server_id,
+                                                   controller_type=controller_type, controller_id=controller_id)
+
+        for l in range(chassis_from, chassis_to):
+            dedicated_mo = LstorageDiskSlot(parent_mo_or_dn=mo, id=str(l))
+            dedicated_mo.drive_path = 'PATH-BOTH'
+            dedicated_mo.ownership = 'chassis-global-spare'
+            controller_ref = LstorageControllerRef(parent_mo_or_dn=dedicated_mo, server_id=server_id,
+                                                   controller_type=controller_type, controller_id=controller_id)
 
         handle.add_mo(mo)
         handle.commit()
@@ -80,7 +84,7 @@ def test_delete_disk_zoning_policy():
         Delete Disk Zoning policy.
     """
     try:
-        parent_mo_dn = adapter_params["parent_mo_or_dn"]
+        parent_mo_dn = adapter_params["parent_mo_dn"]
         policy_name = adapter_params["name"]
 
         obj = handle.query_dn(parent_mo_dn + "/disk-zoning-policy-" + policy_name)

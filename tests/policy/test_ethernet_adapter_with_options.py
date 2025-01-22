@@ -145,3 +145,22 @@ def test_create_ethernet_adapter_policy():
         pytest.fail(f"Error creating Ethernet Adapter policy: {str(e)}")
 
 
+
+@with_setup(setup, teardown)
+def test_delete_ethernet_adapter_policy():
+    """
+        Delete ethernet adapter policy.
+    """
+    try:
+        parent_mo_dn = adapter_params["parent_mo_or_dn"]
+        policy_name = adapter_params["name"]
+
+        obj = handle.query_dn(parent_mo_dn + "/eth-profile-" + policy_name)
+        handle.remove_mo(obj)
+        handle.commit()
+        assert obj is not None, "Failed to create Ethernet Adapter policy"
+
+    except Exception as e:
+        pytest.fail(f"Error creating Ethernet Adapter policy: {str(e)}")
+
+
